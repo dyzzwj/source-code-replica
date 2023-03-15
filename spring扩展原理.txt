@@ -1,0 +1,23 @@
+spring扩展原理
+
+1、BeanFactoryPostProcessor：beanFactory的后置处理器，在beanFactory的标准初始化后调用，此时bean的定义信息都已经加载到beanFactory中，但bean还未被实例化
+	①prepareBeanFactory【BeanFactory的预准备工作】
+	②invokeBeanFactoryPostProcessors【执行BeanFactoryPostProcessor】
+		1、找到所有的BeanFactoryPostProcessor
+			String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);
+		2、对实现PriorityOrdered优先级接口的和Ordered顺序接口的以及普通的BeanFactoryPostProcessor进行分类
+		3、优先执行实现了PriorityOrdered优先级接口的BeanFactoryPostProcessor,再执行实现了Ordered顺序接口的，最后执行普通的BeanFactoryPostProcessor
+
+2、BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor的子接口，BeanDefinitionRegistry是bean定义信息的保存中心，BeanFactory就是按照其中保存的bean定义信息创建实例的
+	postProcessBeanDefinitionRegistry();所有bean的定义信息以及被加载，但是bean还未被实例化，优先于BeanFactoryPostProcessor执行，可以利用其给容器中再来添加一些组件
+	①prepareBeanFactory【BeanFactory的预准备工作】
+	②invokeBeanFactoryPostProcessors();
+
+		找到所有的BeanDefinitionRegistryPostProcessor，遍历，先执行postProcessBeanDefinitionRegistry()方法，再执行postProcessBeanFactory()
+		postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+	③再来从容器中执行BeanFactoryPostProcessor类型的组件，遍历执行postProcessBeanFactory()
+
+
+
+
+

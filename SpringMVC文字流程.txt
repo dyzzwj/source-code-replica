@@ -1,0 +1,28 @@
+1:首先方法进入：doDispatch
+2:checkMultipart() 判断当前请求是否有文件
+3:getHandler（） ：通过HandleMapping去找一个Controller对象 
+	3.1:扩展点1：HandleMapping
+	3.2: Spring boot 扩展Spring mvc 其中就扩展了 HandleMapping 去解析静态资源
+4: getHandlerAdapter（）: 根据你controller的类型去找一个适配器
+	4.1:  因为Controller有很多种不同的注册方式 所以需要不同的适配器
+	4.2:扩展点2：HandlerAdapter
+5:handle() : 执行Controller逻辑并且进行视图裁决（判断是要重定向还是转发还是响应页面）
+	5.1invokeForRequest()：执行controller中方法的全部逻辑
+	5.2：首先给参数赋值  
+		5.2.1:参数赋值的扩展点：HandlerMethodArgumentResolver 
+	5.3：调用invoke（）指定方法
+6:setResponseStatus（）设置ResponseStatus响应状态码 对标：@ResponseStatus注解
+7：handleReturnValue（） 进行视图裁决
+	7.1:扩展点:returnValueHandlers 通过这个对象来进行判断接下来视图怎么做、
+8：handler.handleReturnValue（） 对冲顶于返回值处理（判断是否需要响应还是需要重定向）
+	8.1： 如果是@ResponseBody 注解又有一个扩展点:HttpMessageConverter
+9:getModelAndView() 重新封装一个ModelAndView对象 
+	9.1：如果不需要渲染视图（如果是重定向 || 响应json的话） 就会返回null
+	9.2: mavContainer.isRequestHandled() 判断是否需要重定向或响应
+	9.3: 同时会把model里面的参数放到request.setAttribute（说明model的作用域是request作用域）
+10：processDispatchResult（）：开始做视图渲染
+	10.1:判断是否需要响应异常视图
+	10.2:扩展点：ViewResolver
+	10.2：拿到视图名称 封装一个视图对象 进行forward
+....
+

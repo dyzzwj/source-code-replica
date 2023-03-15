@@ -1,0 +1,46 @@
+spring事务原理：
+springboot事务的自动配置：spring-boot-autoconfigure包下META-INF/spring.factories文件引入了TransactionAutoConfiguration和DataSourceTransactionManagerAutoConfiguration两个自动配置类
+如果容器中没有PlatformTransactionManager类型的bean，DataSourceTransactionManagerAutoConfiguration会给容器中导入一个DataSourceTransactionManager
+TransactionAutoConfiguration配置类中使用了EnableTransactionManagement注解
+
+
+spring:
+1、@EnableTransactionManagement给容器中导入了TransactionManagementConfigurationSelector选择器（ImportSelector的实现类）
+	①TransactionManagementConfigurationSelector给容器中导入了AutoProxyRegistrar和ProxyTransactionManagementConfiguration两个组件
+		1、AutoProxyRegistrar给容器中注册InfrastructureAdvisorAutoProxyCreator组件，是InstantiationAwareBeanPostProcessor类型的后置处理器
+			InfrastructureAdvisorAutoProxyCreator -> AbstractAdvisorAutoProxyCreator -> AbstractAutoProxyCreator
+			AbstractAutoProxyCreator#postProcessAfterInitialization利用后置处理器机制在对象创建以后包装对象，返回一个代理对象（增强器）
+			代理对象执行方法利用拦截器链进行拦截
+
+		2、ProxyTransactionManagementConfiguration
+			①会给容器中注册事务增强器
+				1、事务增强器需要使用事务注解的信息 AnnotationTransactionAttributeSource 解析事务注解
+				2、事务增强器需要事务拦截器 TransactionInterceptor 保存事务管理器和事务属性信息
+					TransactionInterceptor(是MethodInterceptor类型)在目标方法执行的时候执行拦截器链
+					事务拦截器： invoke() -> invokeWithinTransaction();
+						invokeWithinTransaction();
+						{
+							①先获取事务相关的属性
+							TransactionAttributeSource.getTransactionAttribute();
+							②再获取PlatformTransactionManager，如果没有手动向容器里添加事务管理器，最终会从容器中按照类型获取一个默认的PlatformTransactionManager
+							PlatformTransactionManager tm = determineTransactionManager(txAttr);
+							③根据事务传播行为确定是否创建事务,这里会针对不同的事务传播行为做相应处理
+							TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);【开启事务】
+							try{
+								④执行目标方法
+								retVal = invocation.proceedWithInvocation();【执行】
+							}catch(){
+								⑤目标方法执行抛出异常，根据异常类型执行事务提交或者回滚操作
+								completeTransactionAfterThrowing();【回滚事务】 -> txInfo.getTransactionManager().rollback()
+
+							}
+							⑥目标方法执行成功 提交事务
+							commitTransactionAfterReturning();【提交事务】 -> txInfo.getTransactionManager().commit(txInfo.getTransactionStatus());
+
+						}
+
+
+
+
+
+

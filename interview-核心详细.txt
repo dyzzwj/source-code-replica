@@ -1,0 +1,201 @@
+ioc：将创建和查找对象的依赖关系交给容器进行管理
+aop：将与业务逻辑无关的代理抽取出来，集中进行管理 由容器在运行期间进行动态织入
+
+beanPostProcessor
+推断构造方法
+为循环依赖做准备
+属性赋值
+初始化方法
+aop
+
+
+spring事物
+required
+required_new
+supported
+not_supported
+never 
+mandatory
+nested
+
+事物失效场景
+数据库不支持事物
+bean没有交给spring管理
+非public方法
+static或final
+内部方法调用
+多线程
+try catch
+抛出非Exception或Error
+隔离级别配置错误
+rollbackFor
+
+
+eureka client
+	服务注册
+	服务发现
+	心跳续约
+	服务下架
+	全量拉取和增量拉取
+
+
+eureka server
+	服务注册
+	服务发现
+	服务下架
+	心跳续约
+	服务注册表 三级缓存
+	服务剔除任务
+	自我保护机制
+	全量拉取和增量拉取
+	数据同步
+    服务剔除60s执行一次 未续约超时时间90s 三级缓存每30s从二级缓存同步一次数据 eureka每30s服务发现 ribbon每30s从eureka本地缓存获取一次 
+
+feign
+自动配置原理 
+拦截器
+重试机制
+feign整合ribbon和hystrix
+
+
+hystrix
+熔断器打开条件
+熔断器半开状态
+隔离策略
+
+
+多线程
+线程状态 创建 运行 超时 等待超时 阻塞 终止
+线程安全 多线程访问共享变量
+保证线程安全 synchorized Lock cas+volatile threadlocal
+cas缺点 aba问题 自旋 只能保证一个变量的原子操作
+内存泄漏 单例 静态集合 资源未关闭 内部类持有外部类引用
+线程通信机制 wait notify await signal countdownlatch cyclebarrier sempher
+线程与进程区别 1、进程是操作系统分配资源的基本单位 线程是处理器执行和调度的基本单位 2、一个进程至少有一个线程  一个进程可以有多个线程 3、同一线程内的进程共享本进程的地址空间和资源 进程间的资源是相互独立的 4、
+sleep和wait区别   sleep是Thread类的方法 wait是Object类的方法  sleep不会释放锁 wait会释放锁  sleep必须指定时间 wait可以不指定 wait必须在同步代码块中调用
+死锁 互斥条件 不可剥夺 请求与保持 环路等待 
+破坏死锁  请求资源的顺序保持一致 在执行之前就需要申请全部的资源 申请资源失败就释放已获得资源
+synchronize与Lock比较 1/synchorized是关键字 Lock是juc包下的类 synchorized无须手动加锁和释放锁 Lock需要手动加锁和释放锁 2、synchorized是悲观锁 Lock是悲观锁+乐观锁 3、Lock支持可中断获取锁、可超时获取锁、公平锁  4、synchorized有偏向锁和轻量级锁 5、synchorized通过wait和notify进行线程间的通信 Lock通过Condition的await和signal进行线程间通信
+
+tcp三次握手
+client向server发送SYN=1 seq=k 进入SYN_SEND状态
+server收到后 向client发送SYN=1 ACK=1 acknowledge=k+1 seq = j进入SYNC_RECV状态
+client收到后 向server发送ACK=1 acknowledge=j+1 进入establish状态 servera收到后 校验ack 进入establish状态
+
+
+tcp四次挥手
+client向server发送FIN=1 seq=k 进入FIN_WAIT_1状态
+server收到后 发送ACK=1 acknowledge=k+1 进入CLOSE_WAIT状态 此时client不能向server发送数据 但可以接受来自server的数据 client收到后 校验ack 进入FIN_WAIT_2状态
+server发送FIN=1 seq = j 进入LAST_ACK状态
+client收到后进入TIME_WAIT状态 发送ACK=1 acknowlede=j+1 server收到后 校验acknowledge 进入CLOSE状态 client等待两个报文段传输最大时长后 进图CLOSE状态
+输入url到页面展示  dns域名解析 tcp三次握手 http请求协议解析 springmvc请求处理流程 http响应协议解析 keep-alive机制 tcp四次挥手
+http协议格式 请求 请求方式 资源地址 协议格式 响应 协议格式 响应码 响应消息
+
+get与post区别 1、get不会重复提交 2、get编码类型只有urlencoded post支持urlencoded、formdata、json、html 3、get数据长度有限制 4、get只支持ASC字符集 5、get安全性较差 
+对称加密和非对称加密 加密和解密用的是同一个秘钥 
+https原理 CA证书 非对称加密 + 对称加密
+性能分析 top free iostats netstat 
+java 
+	jps 查看当前系统的所有java进程
+	jinfo 查看运行期间java进程的运行时参数
+	jstat 查看堆内存各个区域的使用情况和GC情况
+	jmap 查看对象的统计信息、生成dump文件
+	jstack 查看进程内的线程堆栈信息 
+
+
+
+cpu 100% 
+	1、找cpu使用最高的进程
+	2、找进程中cpu使用最高的线程
+	3、jstack pid | grep 线程id 查看线程的堆栈信息 
+
+OOM分析
+	1、oom可能出现的区域
+	2、jstat查看GC情况
+	3、jmap dump堆转储信息
+	4、MAT分析堆转储文件
+
+接口耗时
+	1、服务负载
+	2、GC
+	3、数据库慢查询 索引
+	4、服务器运行情况
+	5、网络
+	6、加锁 并行执行 
+
+jvm 
+类的加载过程
+	加载
+	链接
+		验证
+		准备
+		解析
+	初始化
+
+类加载器 引导类类加载器 扩展类类加载器 应用类类加载器
+双亲委派机制
+tomcat打破双亲委派机制
+
+运行时数据区 堆 方法区 虚拟机栈 本地方法栈 程序计数器
+	堆
+		年轻代 -XX:NewRatio
+			伊甸园区 幸存者0区 幸存者1区 -XX:SurvivorRatio
+		老年代
+	方法区
+		存储类型信息、域信息、方法信息、运行时常量池、静态变量、jit代码编译缓存
+		jdk1.6 字符串常量池和静态变量存储在永久到
+		jdk1.7 字符串和常量池存储在堆
+		jdk1.8 字符串和常量池存储在堆 类信息、域信息、方法信息、运行时常量池、jit代码编译缓存存储在元空间
+	虚拟机栈
+		每个线程在创建时都会创建一个虚拟机栈 栈里面是一个个栈帧 每个栈帧都代表着一次方法调用
+		栈帧 局部变量表 操作数栈 动态链接 方法返回地址
+		如果线程请求的栈深度超过了虚拟机允许的最大深度，会报StackOverFlow
+		如果虚拟机栈动态扩展时无法申请到足够的内存 那么会报OOM
+	本地方法栈
+
+	程序计数器
+
+kafka 与 rocketmq区别
+1、rocketmq 支持事物消息、异步消息、消息过滤、消息重试
+2、消息存储
+3、服务发现
+4、架构
+5、同步刷盘和异步刷盘
+6、处理消费消息请求
+
+
+char与varchar区别
+char长度不可变 varchar长度可变
+char最长255字节 varchar最长25535
+varchar需要额外一两个字节保存长度
+
+innodb与myisam区别
+innodb支持事物、行锁、外键
+innodb是聚簇索引 查询顺序默认按主键排序 myisam是非聚簇索引 查询顺序默认与插入顺序一致
+innodb .frm .ibd  myisam .frm .MYI .MYD
+myisam count(*)
+innodb redo undo 不支持全文索引
+
+创建索引的原则：
+遵循最左匹配原则
+查询较多的列 更新较少的列
+离散度低的列不适合建索引
+字段大的列不适合建索引
+group by 、order by的列建索引
+作为外键的列
+
+索引失效的情况
+联合索引没有遵循最左匹配
+联合索引范围查询后的列
+like左模糊
+索引列上做运算
+字符串没加单引号
+order by 的字段排序顺序与索引创建顺序
+使用or连接
+!= is null 或 is not null
+
+
+事物实现
+持久性 redo 原子性 undo 隔离性 读操作的隔离性mvcc 写操作的隔离性 锁
+
+ 

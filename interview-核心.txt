@@ -1,0 +1,358 @@
+ioc 把创建和查找对象依赖关系交给容器进行管理 
+aop 面向切面编程 把与业务逻辑无关的代码抽取出来，集中进行管理 
+
+
+推断构造方法
+创建对象
+属性赋值
+before
+初始化方法
+post
+
+
+事务；
+required：不存在 创建事务 存在 加入当前事务
+required_new：存在 挂起当前事务 不存在 创建新的事务
+supported:存在 加入当前事务 不存在 以非事务方式运行
+not_supported：存在事务 就挂起当前事务 以非事务方式运行 不存在则以非事务方式直接运行
+never:存在就跑异常  不存在以非事务方式运行
+mandatory：不存在则抛异常 存在加入当前事务
+nested：存在就创建事务作为当前事务的嵌套事务 不存在就创建事务
+
+事务失效
+
+
+
+springcloud
+
+eureka client
+服务注册 
+心跳续约 每30s
+服务发现 每30s
+服务下架
+
+全量拉取 和 增量拉取
+
+erreka server
+服务注册
+服务下架
+服务剔除 60s执行一次 未续约超时时间90s
+心跳续约
+服务发现
+	全量拉取 真实注册表
+	增量拉取 recentlyChangedQueue
+注册表结构
+	读缓存
+	读写缓存 过期时间默认3分钟 没有从真实数据中拿
+	真实数据
+自我保护机制 
+	
+集群同步
+服务注册信息数据延迟 剔除任务60s执行一次 未续约超时时间90s 三级缓存每过30s从二级缓存同步一次数据 client每30s进行一次服务发现 ribbon每30s从client本地缓存获取一次服务列表
+
+
+feign
+自动配置原理 FeignClientFactoryBean
+feign子容器
+设置日志、重试策略、错误code解析、超时时间、拦截器
+重试机制 NEVER_RETRY 使用ribbon的重试   MaxAutoRetries：对当前实例的重试次数   MaxAutoRetriesNextServer：重试切换实例的次数
+
+
+
+hystrix
+熔断器打开条件：调用失败次数是否大于配置的阈值（样本数量） 失败的百分比大于配置的百分比阈值
+半开状态：断路器是打开状态，每隔circuitBreakerSleepWindowInMilliseconds时间 就有一次半开
+
+线程池隔离和信号量隔离：断路器关闭，判断使用何种资源隔离方式
+
+ribbon
+ribbon子容器
+服务列表缓存 30s 从eureka的本地缓存中获取
+重试 MaxAutoRetries：对当前实例的重试次数   MaxAutoRetriesNextServer：重试切换实例的次数
+
+
+多线程
+线程状态 创建 就绪 运行 阻塞 等待 超时等待 终止
+线程安全 
+cas缺点
+内存泄漏
+线程通信机制
+线程与进程区别
+jmm内存模型 主内存和线程工作内存
+sleep和wait区别
+死锁 互斥 不可剥夺 环路等待 请求与保持 
+预防死锁 线程在执行之前就申请全部的资源 申请的资源保持一致 某个资源申请失败就释放已获取的资源
+synchorized  偏向锁 轻量级锁加锁释放锁流程
+synchorized与Lock比较
+
+aqs
+线程池 阻塞队列 拒绝策略
+合理估算线程池的大小
+
+
+设计模式
+
+
+网络
+物理层 数据链路层 网络层 传输层 表示层 会话层 应用层
+tcp三次握手 四次挥手  第三次握手可以携带数据
+输入url到页面展示 dns 三次握手 http协议 http keep-alive机制
+http协议格式
+get与post区别
+keep-alive Connection:heep-alive请求头  timeout max
+对称加密和非对称加密
+https
+表单重复提交 请求id
+处理重复请求
+
+
+
+性能分析
+
+操作系统 top free iostat netstat
+java jps jinfo jstat jmap jhat jstack
+第三方 mat 
+oom jstat 堆转储文件
+cpu100% 
+死锁
+线程池
+接口耗时 
+频繁GC
+
+
+java基础
+
+
+
+jvm
+类的加载过程
+类加载器
+双亲委派机制
+tomcat打破双签委派机制
+
+运行时数据区
+程序计数器
+虚拟机栈  -Xss
+本地方法栈
+堆 
+方法区（元空间） 类型信息 域信息 方法信息 运行时常量池 静态变量 jit代码编译缓存
+强软弱虚 强引用不回收 软引用内存不足即回收 弱引用发现即回收
+
+垃圾回收器
+	serial 单线程 复制算法 年轻代  STW
+	serial old 单线程 老年代 标记整理 STW
+	Parnew 并行 复制算法 年轻代 STW
+	Parallel 并行 吞吐量优先 年轻代 STW jdk8默认垃圾回收器
+	Parallel old 并行 吞吐量优先 老年代 标记压缩 STW
+	CMS 并发 低延迟 老年代 标记整理 短暂STW
+	G1 整堆 每次根据允许的收集时间 优先回收价值最大的region
+
+
+
+
+
+java对象创建方式
+
+
+
+
+mq
+顺序消费
+重复消费
+消息积压
+消息的可靠性
+
+
+kafka事物消息
+
+
+kafka与rocketmq区别
+1、rocketmq 事物消息 延迟消息 消息过滤 消息重试
+2、存储机制
+3、架构
+4、服务发现
+5. 同步刷盘 异步刷盘 同步master 异步master
+
+
+mybatis
+四大对象 Executor StatementHandler ParameterHandler ResultSetHandler
+一级缓存 二级缓存 
+#{}和${}
+
+mysql
+
+char与varchar的区别
+B+树 非叶子结点只保存关键字和指向子节点的指针，只用于索引 每个叶子结点都存有相邻叶子结点的指针，叶子结点本身依关键字的大小自小而大顺序链接
+
+innodb与myisam区别 
+innodb支持行锁、事物、外键
+innodb是聚簇索引 查询顺序按照主键排序 myisam是非聚簇索引 查询顺序和插入顺序一致
+innodb .frm .ibd myisam .frm MYI MYD
+myisam count(*) 
+事物特性ACID及其原理 原子性undo 持久性redo 隔离性 写操作：锁 读操作：mvcc和undo
+事务日志 redo undo 
+
+
+事物隔离级别
+数据库优化 索引 存储引擎 读写分录 表设计 
+sql优化 慢查询 索引执行计划 show profile 参数调优
+超大分页优化
+explain 查看sql执行计划   type字段 all index range ref  key字段 extra字段 using index using temporary using filesort using join buffer
+
+创建索引的原则 
+索引失效的情况 order by顺序和索引顺序不一致
+取top N
+mvcc机制 快照读 当前读
+exists 和 in
+
+
+netty 
+bio：当调用系统read时，用户线程会一直阻塞 知道内核缓冲区有数据到来为止
+nio：一个线程不断的轮训内核缓冲区的状态，有数据就绪，就调用read来读取
+io多路复用：调用系统select查询数据就绪的socket，有数据就绪 就调用read来读取
+aio
+
+reactor模型
+单线程单reactor
+多线程单reactor
+多线程多reactor
+
+tcp拆包粘包 
+编解码器
+
+netty性能优化的点
+1、替换数据结构
+2、无锁
+3、解决空轮训Bug
+4、mask判断ChanndelHandler类型
+5、直接内存 零拷贝
+
+核心概念 NioEventLoopGroup NioEventLoop ChannelHandler ChannelPipelien 
+
+redis
+
+高性能的原因 纯内存 单线程 io多路服用 数据结构 自定义通信协议编解码简单
+与memcache比较 数据结构 持久化 分布式 单线程 内存管理机制
+rdb
+ 手动 save bgsave
+ 自动 save m n m秒内发生n次写操作
+aof
+ 命令追加 文件写入和文件同步 文件重写
+ 文件同步 always everysec no
+
+键的过期策略 惰性过期 定期过期 
+
+内存淘汰机制 nevication allkeys-lru allkeys-random volatile-random volatile-lru volatile-ttl
+
+sentinel架构
+sentinel节点向master发送info了解最新的主从架构
+sentinel节点基于发布订阅机制获取其他sentinel节点的信息
+sentinel节点向其他节点发送ping命令进行心跳检测
+
+缓存穿透
+缓存雪崩
+缓存击穿
+
+
+一致性Hash算法
+
+
+
+
+
+
+spring
+springmvc执行顺序
+1、将request和response绑定到当前线程
+2、检查文件上传
+3、根据request获取由HandlerMethod和拦截器链组成的HandlerExecutionChain
+4、根据HandlerMethod获取对应的HandlerAdaptor
+5、执行HanlderInterceptor.preHandle
+6、使用HandlerAdaptor执行HandlerMethod 返回ModelAndView
+	- 参数赋值
+	- 处理结果
+
+7、执行HandlerInterceptor.postHandle方法
+8、根据ModelAndView处理分发结果 渲染视图
+9、HandlerInteceptor.afterCompletion
+
+设计模式
+单例模式 工厂模式 代理模式 策略模式 适配器模式 观察者模式
+
+spring循环依赖
+给容器中注入组件
+spring事务传播行为
+spring事务失效场景：数据库或存储引起不支持事务 bena不受spring管理 非public static或final 方法内部调用 多线程调用 try catch 抛出非RuntimeException或Error 设置错误的传播行为 自定义rollbackFor
+
+
+tomcat 
+架构
+coyote 和catalina容器
+
+coyote
+	protocalhandler
+		endpoint + processor
+	adapter
+
+server 
+	service
+		connector
+		engine 
+			host
+				context
+					servlet
+
+
+
+
+
+zk
+选举过程 发出选票 接受来自各个服务器的投票 处理投票 统计投票（过半） 改变状态
+
+保证数据一致性 领导者选举 过半机制 数据同步 两阶段提交
+
+zk分布式锁
+
+
+
+nacos
+服务注册client
+	服务注册 临时节点添加心跳任务
+	服务注销
+	服务发现  三层存储查询 failover文件 内存 向注册中心查询（当查询的服务状态发生变化时，服务端会通知当前客户端）  
+
+服务注册server
+	集群初始化
+	naocs节点之间会进行集群健康检查
+	服务订阅/查询 客户端查询某个服务的信息时，服务端会在该服务发生变化(心跳检测失败)时，推送通知给客户端
+	服务注册  distro协议将节点分为责任节点和非责任节点 只有责任节点才能处理写请求（加了CanDistro注解的请求）
+	心跳检测 
+
+
+配置client
+	配置查询 三层 本地文件系统failover配置 读取config-server实时配置 本地snapshot配置
+	长轮询（对某个namespace下的group下的dataid的） 如果配置发生变更 触发监听器 listener.receiveConfigInfo   nacos整合springboot提供了NacosContextRefresher.receiveConfigInfo 发布ContextRefreshEvent事件
+
+配置server
+	处理长轮询请求 如果配置没有发生变更
+	配置发布 1、集群模式要基于raft协议进行数据同步 2、响应长轮询 
+
+sentinel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
